@@ -1,10 +1,13 @@
 import random
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton
+
 
 def _main(length):
     count = 0
-    res = ""
+    res   = ""
     while count < length:
-        res += chr(random.randint(33,125))
+        res   += chr(random.randint(33,125))
         count += 1
     return res
 
@@ -14,7 +17,11 @@ def _save(my_pass,pass_for):
         file.write(my_pass)
 
     
-used_for = input()
-_save(_main(random.randint(15,30)), used_for)
-print("Ready")
-input("Tab any key to close")
+app    = QApplication(sys.argv)
+
+window = QMainWindow()
+window.show()
+
+
+app.exec()
+

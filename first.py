@@ -14,5 +14,7 @@ def _save(my_pass,pass_for):
         file.write(my_pass)
 
     
-
-        
+used_for = input()
+_save(_main(random.randint(15,30)), used_for)
+print("Ready")
+input("Tab any key to close")

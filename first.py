@@ -1,6 +1,6 @@
 import sys
 import random
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QMainWindow, QLabel, QVBoxLayout
 
 
 def _main(length):
@@ -16,30 +16,49 @@ def _save(my_pass,pass_for):
     with open("all_pass/{}.txt".format(path), "w") as file:
         file.write(my_pass)
         
-        
 
-class GenApplication(QWidget):
+
+    
+
+class GenApplication(QMainWindow):
+
+    password = _main(random.randint(10,30))
+    _str = ""
+    
     def __init__(self):
         super().__init__()
 
+        #Screen param
         self.setWindowTitle("PassGen")
         self.setFixedWidth(400)
-        self.setFixedHeight(200)
+        self.setFixedHeight(150)
+        
+        #Button param
+        self.UIComponents()
+        self.show()
 
+
+    def UIComponents(self):
+        #Button param
+        button = QPushButton("Generate",self)
+        button.setGeometry(100,90,200,25)
+        button.clicked.connect(self.generate_pass)
+        print(self._str)
+
+        text_window = QTextEdit(self)
+        text_window.setReadOnly(True)
+        text_window.setGeometry(100,50,200,25)
+        text_window.setHtml("<p align=\"center\">{}".format(self.password))
+
+    def generate_pass(self):
+        self.password = _main(random.randint(10,30))
+        _str = self.password
         
 
 def main():
-    app    = QApplication([])
-
+    app    = QApplication(sys.argv)
     window = GenApplication()
-    layout = QVBoxLayout()
-
-    layout.addWidget(QPushButton("QQQ"))
-    window.setLayout(layout)
-    window.show()
-
-
-    app.exec()
+    app.exit(app.exec())
 
 if __name__ == '__main__':
     main()

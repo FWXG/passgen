@@ -16,8 +16,6 @@ def _save(my_pass,pass_for):
     with open("all_pass/{}.txt".format(path), "w") as file:
         file.write(my_pass)
         
-
-
     
 
 class GenApplication(QMainWindow):
@@ -36,25 +34,26 @@ class GenApplication(QMainWindow):
         self.UIComponents()
         self.show()
 
-
     def UIComponents(self):
         #Button param
         button = QPushButton("Generate",self)
         button.setGeometry(100,90,200,25)
-        button.clicked.connect(lambda:generate_pass(self.password))
+        button.clicked.connect(self.generate_pass)
 
         text_window = QTextEdit(self)
         text_window.setReadOnly(True)
         text_window.setGeometry(100,50,200,25)
         text_window.setHtml("<p align=\"center\">{}".format(self.password))
 
-        save_for = QTextEdit(self)
-        save_for.setReadOnly(False)
-        save_for.setGeometry(100,0,200,25)
+        #save_for = QTextEdit(self)
+        #save_for.setReadOnly(False)
+        #save_for.setGeometry(100,0,200,25)
         #save_for.setHtml("<p align=\"center\">{}".format(self.password))
 
-    def generate_pass(self,password):
+    def generate_pass(self):
         password = _main(random.randint(10,30))
+        sender = self.sender()
+        self.statusBar().showMessage(password)
         #_save(self.password, save_for.toPlainText())
         
 

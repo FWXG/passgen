@@ -19,8 +19,6 @@ def _save(my_pass,pass_for):
     
 
 class GenApplication(QMainWindow):
-
-    password = _main(random.randint(10,30))
     
     def __init__(self):
         super().__init__()
@@ -36,24 +34,24 @@ class GenApplication(QMainWindow):
 
     def UIComponents(self):
         #Button param
-        button = QPushButton("Generate",self)
-        button.setGeometry(100,90,200,25)
-        button.clicked.connect(self.generate_pass)
+        self.button = QPushButton("Generate",self)
+        self.button.setGeometry(100,90,200,25)
+        self.button.clicked.connect(self.generate_pass)
 
-        text_window = QTextEdit(self)
-        text_window.setReadOnly(True)
-        text_window.setGeometry(100,50,200,25)
-        text_window.setHtml("<p align=\"center\">{}".format(self.password))
+        #PassGen Text Param
+        self.text_window = QTextEdit(self)
+        self.text_window.setReadOnly(True)
+        self.text_window.setGeometry(100,50,200,25)
 
-        #save_for = QTextEdit(self)
-        #save_for.setReadOnly(False)
-        #save_for.setGeometry(100,0,200,25)
-        #save_for.setHtml("<p align=\"center\">{}".format(self.password))
+        #SaveFor Param
+        self.save_for = QTextEdit(self)
+        self.save_for.setReadOnly(False)
+        self.save_for.setGeometry(100,10,200,25)
+        #self.save_for.setHtml("<p align=\"center\">{}".format("test"))
 
     def generate_pass(self):
         password = _main(random.randint(10,30))
-        sender = self.sender()
-        self.statusBar().showMessage(password)
+        self.text_window.setHtml("<p align=\"center\">{}".format(password))
         #_save(self.password, save_for.toPlainText())
         
 

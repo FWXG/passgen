@@ -33,7 +33,7 @@ class GenApplication(QMainWindow):
         self.show()
 
     def UIComponents(self):
-        #Button param
+        #Button Param
         self.button = QPushButton("Generate",self)
         self.button.setGeometry(100,90,200,25)
         self.button.clicked.connect(self.generate_pass)
@@ -46,11 +46,26 @@ class GenApplication(QMainWindow):
         #SaveFor Param
         self.save_for = QTextEdit(self)
         self.save_for.setReadOnly(False)
-        self.save_for.setGeometry(100,10,200,25)
+        self.save_for.setGeometry(175,10,75,25)
         #self.save_for.setHtml("<p align=\"center\">{}".format("test"))
+
+        #Length Param
+        self.length_window = QTextEdit(self)
+        self.length_window.setReadOnly(False)
+        self.length_window.setGeometry(60,10,25,25)
+
+        #Text 
+        self.length_text = QLabel(self)
+        self.length_text.setText("Length:")
+        self.length_text.setGeometry(15,14,40,15)
+        self.pass_for_text = QLabel(self)
+        self.pass_for_text.setText("Pass for:")
+        self.pass_for_text.setGeometry(130,14,40,15)
 
     def generate_pass(self):
         password = _main(random.randint(10,30))
+        print(self.length_window.toPlainText())
+        print(type(self.length_window.toPlainText()))
         self.text_window.setHtml("<p align=\"center\">{}".format(password))
         #_save(self.password, save_for.toPlainText())
         

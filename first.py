@@ -1,6 +1,6 @@
 import sys
 import random
-from PyQt5.QtWidgets import QApplication,QPlainTextEdit ,QWidget, QPushButton, QTextEdit, QMainWindow, QLabel, QMessageBox
+from PyQt5.QtWidgets import QApplication,QTextEdit,QPlainTextEdit,QLineEdit,QWidget, QPushButton, QMainWindow, QLabel, QMessageBox
 from PyQt5.QtCore import QObject, pyqtSignal 
 
 def len_err():
@@ -28,7 +28,7 @@ def _main(length):
     count = 0
     res   = ""
 
-    while count < int(length):
+    while count < length:
         res   += chr(random.randint(33,125))
         count += 1
     return res
@@ -66,27 +66,29 @@ class GenApplication(QMainWindow):
         self.text_window.setGeometry(100,50,200,25)
 
         #SaveFor Param
-        self.save_for = QTextEdit(self)
+        self.save_for = QLineEdit(self)
         self.save_for.setReadOnly(False)
+        self.save_for.setMaxLength(10)
         self.save_for.setGeometry(175,10,75,25)
 
         #Length Param
-        self.length_window = QTextEdit(self)
+        self.length_window = QLineEdit(self)
         self.length_window.setReadOnly(False)
+        self.length_window.setMaxLength(2)
         self.length_window.setGeometry(60,10,25,25)
-        #For cortrol length use cursor?
 
         #Text 
         self.length_text   = QLabel(self)
         self.length_text.setText("Length:")
         self.length_text.setGeometry(15,14,40,15)
         self.pass_for_text = QLabel(self)
-        self.pass_for_text.setText("Pass for:")
-        self.pass_for_text.setGeometry(127,14,50,15)
+        self.pass_for_text.setText("Password for:")
+        self.pass_for_text.setGeometry(105,14,70,15)
         
 
     def generate_pass(self):
-        length = self.length_window.toPlainText()
+        length = self.length_window.text()
+        print(type(length), length)
 
         if length == "" or length.isalpha():
             len_err()
@@ -97,13 +99,13 @@ class GenApplication(QMainWindow):
             self.length_window.clear()
             return 0
 
-        if self.save_for.toPlainText() == "":
+        if self.save_for.text() == "":
             name_err()
             return 0
                  
-        password = _main(length)
+        password = _main(int(length))
         self.text_window.setHtml("<p align=\"center\">{}".format(password))
-        _save(password, self.save_for.toPlainText())
+        _save(password, self.save_for.text())
         pass_name_info()
 
         

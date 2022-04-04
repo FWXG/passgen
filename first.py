@@ -1,13 +1,33 @@
 import sys
 import random
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QMainWindow, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QApplication,QPlainTextEdit ,QWidget, QPushButton, QTextEdit, QMainWindow, QLabel, QMessageBox
+from PyQt5.QtCore import QObject, pyqtSignal 
 
+def len_err():
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Critical)
+    msg.setText("Length Error")
+    msg.setWindowTitle("PassGen")
+    msg.exec_()
+
+def name_err():
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Critical)
+    msg.setText("Name Error")
+    msg.setWindowTitle("PassGen")
+    msg.exec_()
+
+def pass_name_info():
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Information)
+    msg.setText("Password was saved")
+    msg.setWindowTitle("PassGen")
+    msg.exec_()
 
 def _main(length):
     count = 0
     res   = ""
-    if length == "":
-        length = 0
+
     while count < int(length):
         res   += chr(random.randint(33,125))
         count += 1
@@ -54,6 +74,7 @@ class GenApplication(QMainWindow):
         self.length_window = QTextEdit(self)
         self.length_window.setReadOnly(False)
         self.length_window.setGeometry(60,10,25,25)
+        #For cortrol length use cursor?
 
         #Text 
         self.length_text   = QLabel(self)
@@ -62,12 +83,29 @@ class GenApplication(QMainWindow):
         self.pass_for_text = QLabel(self)
         self.pass_for_text.setText("Pass for:")
         self.pass_for_text.setGeometry(127,14,50,15)
+        
 
     def generate_pass(self):
         length = self.length_window.toPlainText()
+
+        if length == "" or length.isalpha():
+            len_err()
+            return 0
+        
+        if length and int(length) > 30 or int(length) < 1:
+            len_err()
+            self.length_window.clear()
+            return 0
+
+        if self.save_for.toPlainText() == "":
+            name_err()
+            return 0
+                 
         password = _main(length)
         self.text_window.setHtml("<p align=\"center\">{}".format(password))
         _save(password, self.save_for.toPlainText())
+        pass_name_info()
+
         
 
 def main():

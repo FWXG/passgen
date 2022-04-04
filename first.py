@@ -6,7 +6,9 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QTextEdit, QMain
 def _main(length):
     count = 0
     res   = ""
-    while count < length:
+    if length == "":
+        length = 0
+    while count < int(length):
         res   += chr(random.randint(33,125))
         count += 1
     return res
@@ -47,7 +49,6 @@ class GenApplication(QMainWindow):
         self.save_for = QTextEdit(self)
         self.save_for.setReadOnly(False)
         self.save_for.setGeometry(175,10,75,25)
-        #self.save_for.setHtml("<p align=\"center\">{}".format("test"))
 
         #Length Param
         self.length_window = QTextEdit(self)
@@ -55,19 +56,18 @@ class GenApplication(QMainWindow):
         self.length_window.setGeometry(60,10,25,25)
 
         #Text 
-        self.length_text = QLabel(self)
+        self.length_text   = QLabel(self)
         self.length_text.setText("Length:")
         self.length_text.setGeometry(15,14,40,15)
         self.pass_for_text = QLabel(self)
         self.pass_for_text.setText("Pass for:")
-        self.pass_for_text.setGeometry(130,14,40,15)
+        self.pass_for_text.setGeometry(127,14,50,15)
 
     def generate_pass(self):
-        password = _main(random.randint(10,30))
-        print(self.length_window.toPlainText())
-        print(type(self.length_window.toPlainText()))
+        length = self.length_window.toPlainText()
+        password = _main(length)
         self.text_window.setHtml("<p align=\"center\">{}".format(password))
-        #_save(self.password, save_for.toPlainText())
+        _save(password, self.save_for.toPlainText())
         
 
 def main():

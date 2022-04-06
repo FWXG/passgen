@@ -1,7 +1,7 @@
 import sys
 import random
-from PyQt5.QtWidgets import QApplication,QTextEdit,QPlainTextEdit,QLineEdit,QWidget, QPushButton, QMainWindow, QLabel, QMessageBox
-from PyQt5.QtCore import QObject, pyqtSignal 
+from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, QWidget, QPushButton, QMainWindow,QLabel, QCheckBox, QMessageBox
+from PyQt5.QtCore import QObject, Qt
 
 def len_err():
     msg = QMessageBox()
@@ -61,7 +61,7 @@ class GenApplication(QMainWindow):
         self.button.clicked.connect(self.generate_pass)
 
         #PassGen Text Param
-        self.text_window = QTextEdit(self)
+        self.text_window = QLineEdit(self)
         self.text_window.setReadOnly(True)
         self.text_window.setGeometry(100,50,200,25)
 
@@ -84,6 +84,13 @@ class GenApplication(QMainWindow):
         self.pass_for_text = QLabel(self)
         self.pass_for_text.setText("Password for:")
         self.pass_for_text.setGeometry(105,14,70,15)
+        self.hide_pass = QLabel(self)
+        self.hide_pass.setText("Hide password:")
+        self.hide_pass.setGeometry(265,14,80,15)
+
+        #CheckBox
+        self.show_pass = QCheckBox(self)
+        self.show_pass.setGeometry(347,13, 20, 20)
         
 
     def generate_pass(self):
@@ -102,9 +109,16 @@ class GenApplication(QMainWindow):
         if self.save_for.text() == "":
             name_err()
             return 0
+
+        if self.show_pass.isChecked():
+            print(True)
+            self.text_window.setEchoMode(QLineEdit.Password)
+        else:
+            self.text_window.setEchoMode(QLineEdit.Normal)
                  
         password = _main(int(length))
-        self.text_window.setHtml("<p align=\"center\">{}".format(password))
+        self.text_window.setAlignment(Qt.AlignCenter)
+        self.text_window.setText(password)
         _save(password, self.save_for.text())
         pass_name_info()
 

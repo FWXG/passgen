@@ -1,14 +1,18 @@
 import sys
 import random
-from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, QWidget, QPushButton, QMainWindow,QLabel, QCheckBox, QMessageBox, QMenu, QAction,QDialog
+from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, QWidget, QPushButton, QMainWindow,QLabel, QCheckBox, QMessageBox, QMenu, QAction,QDialog,QFileDialog
 from PyQt5.QtCore import QObject, Qt
     
 class GenApplication(QMainWindow):
     
     def __init__(self):
         super().__init__()
+        #Toolbar
         self._createActions()
         self._createMenuBar()
+        self._connectActions()
+
+        self.openAction.triggered.connect(self._browseFiles)
 
         #Screen param
         self.setWindowTitle("PassGen")
@@ -83,6 +87,9 @@ class GenApplication(QMainWindow):
         self.text_window.setAlignment(Qt.AlignCenter)
         self.text_window.setText(password)
         self._save(password, self.save_for.text())
+        #Save from toolbar
+        #self.saveAction.triggered.connect(self._save(password, self.save_for.text()))
+        #it must remove into constructor
         self.pass_name_info()
 
     def _createMenuBar(self):
@@ -114,6 +121,18 @@ class GenApplication(QMainWindow):
         self.Symbols.setCheckable(True)
         self.Symbols.setChecked(True)
         self.openDocs = QAction('&About', self)
+
+    def _connectActions(self):
+        self.newAction.triggered.connect(self._newPass)
+
+    def _newPass(self):
+        self.length_window.clear()
+        self.save_for.clear()
+        self.text_window.clear()
+
+    def _browseFiles(self):
+        fname = QFileDialog.getOpenFileName(self,'Open File','*.txt')
+        #@TODO set len and name into pole
         
     def keyPressEvent(self, event):
         #print(event.text())
@@ -163,7 +182,7 @@ class GenApplication(QMainWindow):
         elif state == 1:
             while count < length:
                 tmp = chr(random.randint(33,126))
-                if ord(tmp) <=57 and ord(tmp) >= 47:
+                if 47 <= ord(tmp) <=57:
                     continue
                 res   += tmp
                 count += 1
@@ -171,7 +190,7 @@ class GenApplication(QMainWindow):
         elif state == 2:
             while count < length:
                 tmp = chr(random.randint(33,126))
-                if ord(tmp) <=90 and ord(tmp) >= 65 or ord(tmp) <=122 and ord(tmp) >= 97:
+                if 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122:
                     continue
                 res   += tmp
                 count += 1
@@ -179,7 +198,7 @@ class GenApplication(QMainWindow):
         elif state == 3:
             while count < length:
                 tmp = chr(random.randint(33,122))
-                if ord(tmp) <=47 and ord(tmp) >= 33 or ord(tmp) <=64 and ord(tmp) >= 58 or ord(tmp) <=97 and ord(tmp) >= 91:
+                if 33 <= ord(tmp) <=47 or 58 <= ord(tmp) <=64 or 91 <= ord(tmp) <=97:
                     continue
                 res   += tmp
                 count += 1

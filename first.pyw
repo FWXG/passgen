@@ -12,7 +12,8 @@ class GenApplication(QMainWindow):
         self._createMenuBar()
         self._connectActions()
 
-        self.openAction.triggered.connect(self._browseFiles)
+        self.openAction.triggered.connect(self._browsePassword)
+        self.saveAction.triggered.connect(self._savePassword)
 
         #Screen param
         self.setWindowTitle("PassGen")
@@ -83,10 +84,10 @@ class GenApplication(QMainWindow):
         else:
             self.text_window.setEchoMode(QLineEdit.Normal)
                  
-        password = self._main(int(length))
+        self.password = self._main(int(length))
         self.text_window.setAlignment(Qt.AlignCenter)
-        self.text_window.setText(password)
-        self._save(password, self.save_for.text())
+        self.text_window.setText(self.password)
+        self._save(self.password, self.save_for.text())
         #Save from toolbar
         #self.saveAction.triggered.connect(self._save(password, self.save_for.text()))
         #it must remove into constructor
@@ -130,9 +131,19 @@ class GenApplication(QMainWindow):
         self.save_for.clear()
         self.text_window.clear()
 
-    def _browseFiles(self):
-        fname = QFileDialog.getOpenFileName(self,'Open File','*.txt')
+    def _browsePassword(self):
+        fname = QFileDialog.getOpenFileName(self,'Open file','*.txt')
         #@TODO set len and name into pole
+
+    def _savePassword(self):
+        sname = QFileDialog.getSaveFileName(self,'Save file','*.txt')
+        
+        if self.save_for.text() == "":
+            self.name_err()
+            return 0
+        
+        self._save(self.password,sname[0])
+        self.pass_name_info()
         
     def keyPressEvent(self, event):
         #print(event.text())
@@ -204,8 +215,6 @@ class GenApplication(QMainWindow):
                 count += 1
             return res 
             
-
-
 
     def _save(self,my_pass,pass_for):
         path = pass_for

@@ -58,7 +58,6 @@ class GenApplication(QMainWindow):
         self.show_pass = QCheckBox(self)
         self.show_pass.setGeometry(347,33, 20, 20)
         
-
     def _generate_pass(self):
         length = self.length_window.text()
 
@@ -123,11 +122,10 @@ class GenApplication(QMainWindow):
         elif event.key() == Qt.Key_Enter:
             self._generate_pass()
 
-
     def len_err(self):
         self.msg_err = QMessageBox()
         self.msg_err.setIcon(QMessageBox.Critical)
-        self.msg_err.setText("Length Error")
+        self.msg_err.setText("<p align='bottom'>Length Error</p>") #Not work
         self.msg_err.setWindowTitle("PassGen")
         self.msg_err.exec_()
 
@@ -148,11 +146,47 @@ class GenApplication(QMainWindow):
     def _main(self,length):
         count = 0
         res   = ""
+        state = 0
 
-        while count < length:
-            res   += chr(random.randint(33,125))
-            count += 1
-        return res
+        if not self.Numbers.isChecked():
+            state = 1
+        elif not self.Letters.isChecked():
+            state = 2
+        elif not self.Symbols.isChecked():
+            state = 3
+
+        if state == 0:
+            while count < length:
+                res   += chr(random.randint(33,126))
+                count += 1
+            return res
+        elif state == 1:
+            while count < length:
+                tmp = chr(random.randint(33,126))
+                if ord(tmp) <=57 and ord(tmp) >= 47:
+                    continue
+                res   += tmp
+                count += 1
+            return res
+        elif state == 2:
+            while count < length:
+                tmp = chr(random.randint(33,126))
+                if ord(tmp) <=90 and ord(tmp) >= 65 or ord(tmp) <=122 and ord(tmp) >= 97:
+                    continue
+                res   += tmp
+                count += 1
+            return res
+        elif state == 3:
+            while count < length:
+                tmp = chr(random.randint(33,122))
+                if ord(tmp) <=47 and ord(tmp) >= 33 or ord(tmp) <=64 and ord(tmp) >= 58 or ord(tmp) <=97 and ord(tmp) >= 91:
+                    continue
+                res   += tmp
+                count += 1
+            return res 
+            
+
+
 
     def _save(self,my_pass,pass_for):
         path = pass_for

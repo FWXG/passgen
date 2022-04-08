@@ -1,6 +1,8 @@
 import sys
+import os
 import random
-from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, QWidget, QPushButton, QMainWindow,QLabel, QCheckBox, QMessageBox, QMenu, QAction,QDialog,QFileDialog
+from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, \
+     QWidget, QPushButton, QMainWindow,QLabel, QCheckBox, QMessageBox, QMenu, QAction,QDialog,QFileDialog
 from PyQt5.QtCore import QObject, Qt
     
 class GenApplication(QMainWindow):
@@ -131,10 +133,20 @@ class GenApplication(QMainWindow):
 
     def _browsePassword(self):
         fname = QFileDialog.getOpenFileName(self,'Open file','*.txt', filter = 'Text Files(.txt)')
-        #@TODO set len and name into pole
+        basename = os.path.basename(fname[0])
+        self.save_for.setText(basename)
+
+        with open(fname[0], 'r') as file:
+            pass_file = file.readline()
+
+        self.length_window.setText(str(len(pass_file)))
+        self.text_window.setAlignment(Qt.AlignCenter)
+        self.text_window.setText(pass_file)
+        
 
     def _savePassword(self):
-        sname = QFileDialog.getSaveFileName(self,'Save file','{}'.format(self.save_for.text()), filter = 'Text Files(.txt)')
+        sname = QFileDialog.getSaveFileName(self,'Save file','{}'.format(self.save_for.text()),\
+                                            filter = 'Text Files(.txt)')
 
         if sname == ('',''):
             return 0
@@ -181,12 +193,23 @@ class GenApplication(QMainWindow):
         res   = ""
         state = 0
 
-        if not self.Numbers.isChecked():
+        if not self.Letters.isChecked() and not self.Numbers.isChecked() and not self.Symbols.isChecked():
+            state = 7
+        elif not self.Letters.isChecked() and not self.Numbers.isChecked():
             state = 1
-        elif not self.Letters.isChecked():
+        elif not self.Numbers.isChecked() and not self.Symbols.isChecked():
             state = 2
-        elif not self.Symbols.isChecked():
+        elif not self.Letters.isChecked() and not self.Symbols.isChecked():
             state = 3
+        elif not self.Numbers.isChecked():
+            state = 4
+        elif not self.Letters.isChecked():
+            state = 5
+        elif not self.Symbols.isChecked():
+            state = 6
+
+
+        print(state)
 
         if state == 0:
             while count < length:
@@ -196,15 +219,16 @@ class GenApplication(QMainWindow):
         elif state == 1:
             while count < length:
                 tmp = chr(random.randint(33,126))
-                if 47 <= ord(tmp) <=57:
+                if 47 <= ord(tmp) <=57 or 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122:
                     continue
                 res   += tmp
                 count += 1
             return res
         elif state == 2:
             while count < length:
-                tmp = chr(random.randint(33,126))
-                if 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122:
+                tmp = chr(random.randint(33,122))
+                if 47 <= ord(tmp) <=57 or 33 <= ord(tmp) <=47 or 58 <= ord(tmp) <=64 or\
+                   91 <= ord(tmp) <=97:
                     continue
                 res   += tmp
                 count += 1
@@ -212,11 +236,39 @@ class GenApplication(QMainWindow):
         elif state == 3:
             while count < length:
                 tmp = chr(random.randint(33,122))
+                if 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122 or 33 <= ord(tmp) <=47 or\
+                   58 <= ord(tmp) <=64 or 91 <= ord(tmp) <=97:
+                    continue
+                res   += tmp
+                count += 1
+            return res
+        elif state == 4:
+            while count < length:
+                tmp = chr(random.randint(33,126))
+                if 47 <= ord(tmp) <=57:
+                    continue
+                res   += tmp
+                count += 1
+            return res
+        elif state == 5:
+            while count < length:
+                tmp = chr(random.randint(33,126))
+                if 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122:
+                    continue
+                res   += tmp
+                count += 1
+            return res
+        elif state == 6:
+            while count < length:
+                tmp = chr(random.randint(33,122))
                 if 33 <= ord(tmp) <=47 or 58 <= ord(tmp) <=64 or 91 <= ord(tmp) <=97:
                     continue
                 res   += tmp
                 count += 1
-            return res 
+            return res
+        elif state == 7:
+            return ""
+
             
 
     def _save(self,my_pass,pass_for):

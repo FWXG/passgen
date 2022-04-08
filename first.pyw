@@ -87,11 +87,9 @@ class GenApplication(QMainWindow):
         self.password = self._main(int(length))
         self.text_window.setAlignment(Qt.AlignCenter)
         self.text_window.setText(self.password)
-        self._save(self.password, self.save_for.text())
-        #Save from toolbar
-        #self.saveAction.triggered.connect(self._save(password, self.save_for.text()))
-        #it must remove into constructor
-        self.pass_name_info()
+        #Save from push generate button
+        #self._save(self.password, self.save_for.text())
+        #self.pass_name_info()
 
     def _createMenuBar(self):
         menuBar  = self.menuBar()
@@ -132,11 +130,16 @@ class GenApplication(QMainWindow):
         self.text_window.clear()
 
     def _browsePassword(self):
-        fname = QFileDialog.getOpenFileName(self,'Open file','*.txt')
+        fname = QFileDialog.getOpenFileName(self,'Open file','*.txt', filter = 'Text Files(.txt)')
         #@TODO set len and name into pole
 
     def _savePassword(self):
-        sname = QFileDialog.getSaveFileName(self,'Save file','*.txt')
+        sname = QFileDialog.getSaveFileName(self,'Save file','{}'.format(self.save_for.text()), filter = 'Text Files(.txt)')
+
+        if sname == ('',''):
+            return 0
+
+        print(sname)
         
         if self.save_for.text() == "":
             self.name_err()

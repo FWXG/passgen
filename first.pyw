@@ -134,11 +134,14 @@ class GenApplication(QMainWindow):
     def _browsePassword(self):
         fname = QFileDialog.getOpenFileName(self,'Open file','*.txt', filter = 'Text Files(.txt)')
         basename = os.path.basename(fname[0])
-        self.save_for.setText(basename)
 
         with open(fname[0], 'r') as file:
             pass_file = file.readline()
+            
+        if basename.endswith('.txt'):
+            basename = basename[:basename.find('.txt')]
 
+        self.save_for.setText(basename)
         self.length_window.setText(str(len(pass_file)))
         self.text_window.setAlignment(Qt.AlignCenter)
         self.text_window.setText(pass_file)

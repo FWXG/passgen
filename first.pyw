@@ -1,14 +1,11 @@
 import sys
 import os
 import random
+import binascii
 from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, \
      QWidget, QPushButton, QMainWindow,QLabel, QCheckBox, QMessageBox, QMenu, QAction,QDialog,QFileDialog
 from PyQt5.QtCore import QObject, Qt
 
-
-def BinaryToDecimal(binary):
-    string = int(binary, 2)  
-    return string
 
 class GenApplication(QMainWindow):
     
@@ -142,21 +139,16 @@ class GenApplication(QMainWindow):
         basename = os.path.basename(fname[0])
 
         with open(fname[0], 'r') as file:
-            tmp = file.readline()
-            str_data = ''
-            for i in range(0, len(tmp), 7):
-                temp_data = tmp[i:i + 7]
-                decimal_data = BinaryToDecimal(temp_data)
-                str_data = str_data + chr(decimal_data)
-            
+            pass_file = int(file.read(), 2)
+            tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
             
         if basename.endswith('.txt'):
             basename = basename[:basename.find('.txt')]
 
         self.save_for.setText(basename)
-        self.length_window.setText(str(len(str_data)))
+        self.length_window.setText(str(len(tmp)))
         self.text_window.setAlignment(Qt.AlignCenter)
-        self.text_window.setText(str_data)
+        self.text_window.setText(tmp)
         
 
     def _savePassword(self):
@@ -165,8 +157,6 @@ class GenApplication(QMainWindow):
 
         if sname == ('',''):
             return 0
-
-        print(sname)
         
         if self.save_for.text() == "":
             self.name_err()
@@ -293,7 +283,7 @@ class GenApplication(QMainWindow):
     def _save(self,my_pass,pass_for):
         path = pass_for
         with open("{}.txt".format(path), "w") as file:
-            tmp = ''.join(format(ord(x), 'b') for x in my_pass)
+            tmp = bin(int.from_bytes(my_pass.encode(), 'big'))
             file.write(tmp)
 
 

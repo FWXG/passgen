@@ -4,7 +4,12 @@ import random
 from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, \
      QWidget, QPushButton, QMainWindow,QLabel, QCheckBox, QMessageBox, QMenu, QAction,QDialog,QFileDialog
 from PyQt5.QtCore import QObject, Qt
-    
+
+
+def BinaryToDecimal(binary):
+    string = int(binary, 2)  
+    return string
+
 class GenApplication(QMainWindow):
     
     def __init__(self):
@@ -16,6 +21,7 @@ class GenApplication(QMainWindow):
 
         self.openAction.triggered.connect(self._browsePassword)
         self.saveAction.triggered.connect(self._savePassword)
+        #self.openDocs.triggered.connect(self._openDocs)
 
         #Screen param
         self.setWindowTitle("PassGen")
@@ -136,15 +142,21 @@ class GenApplication(QMainWindow):
         basename = os.path.basename(fname[0])
 
         with open(fname[0], 'r') as file:
-            pass_file = file.readline()
+            tmp = file.readline()
+            str_data = ''
+            for i in range(0, len(tmp), 7):
+                temp_data = tmp[i:i + 7]
+                decimal_data = BinaryToDecimal(temp_data)
+                str_data = str_data + chr(decimal_data)
+            
             
         if basename.endswith('.txt'):
             basename = basename[:basename.find('.txt')]
 
         self.save_for.setText(basename)
-        self.length_window.setText(str(len(pass_file)))
+        self.length_window.setText(str(len(str_data)))
         self.text_window.setAlignment(Qt.AlignCenter)
-        self.text_window.setText(pass_file)
+        self.text_window.setText(str_data)
         
 
     def _savePassword(self):
@@ -162,6 +174,10 @@ class GenApplication(QMainWindow):
         
         self._save(self.password,sname[0])
         self.pass_name_info()
+
+    #def _openDoc(self):
+        #with open('doc.txt', 'r') as doc_file:
+            #about = doc_file.read()
         
     def keyPressEvent(self, event):
         #print(event.text())
@@ -277,10 +293,16 @@ class GenApplication(QMainWindow):
     def _save(self,my_pass,pass_for):
         path = pass_for
         with open("{}.txt".format(path), "w") as file:
-            file.write(my_pass)
+            tmp = ''.join(format(ord(x), 'b') for x in my_pass)
+            file.write(tmp)
 
 
 def main():
+    if hasattr(Qt, 'AA_EnableHighDpiScaling'):
+        QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    if hasattr(Qt, 'AA_UseHighDpiPixmaps'):
+        QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True)
+    
     app    = QApplication(sys.argv)
     window = GenApplication()
     app.exit(app.exec())

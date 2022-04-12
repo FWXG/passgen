@@ -30,15 +30,29 @@ class GenApplication(QMainWindow):
         self.show()
 
     def UIComponents(self):
+
+        #CheckBox ShowPassword
+        self.show_pass = QCheckBox(self)
+        self.show_pass.setGeometry(347,33, 20, 20)
+
+        #CheckBox remake password
+        self.remake_pass = QCheckBox(self)
+        self.remake_pass.setChecked(True)
+        self.remake_pass.setGeometry(347,66, 20, 20)
+        
         #Button Param
         self.button = QPushButton("Generate",self)
-        self.button.setGeometry(100,110,200,25)
+        self.button.setGeometry(50,110,200,25)
         self.button.clicked.connect(self._generate_pass)
 
         #PassGen Text Param
         self.text_window = QLineEdit(self)
-        self.text_window.setReadOnly(True)
-        self.text_window.setGeometry(100,75,200,25)
+        self.text_window.setGeometry(50,75,200,25)
+        #Not work
+        if self.remake_pass.isChecked():
+            self.text_window.setReadOnly(True)
+        else:
+            self.text_window.setReadOnly(False)
 
         #SaveFor Param
         self.save_for = QLineEdit(self)
@@ -63,10 +77,9 @@ class GenApplication(QMainWindow):
         self.hide_pass = QLabel(self)
         self.hide_pass.setText("Hide password:")
         self.hide_pass.setGeometry(265,34,80,15)
-
-        #CheckBox ShowPassword
-        self.show_pass = QCheckBox(self)
-        self.show_pass.setGeometry(347,33, 20, 20)
+        self.change_pass_text = QLabel(self)
+        self.change_pass_text.setText("Readmod:")
+        self.change_pass_text.setGeometry(290,68,70,15)
         
     def _generate_pass(self):
         length = self.length_window.text()
@@ -139,8 +152,16 @@ class GenApplication(QMainWindow):
         basename = os.path.basename(fname[0])
 
         with open(fname[0], 'r') as file:
-            pass_file = int(file.read(), 2)
-            tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
+            
+            all_file = file.read()
+            
+            if all_file.startswith('***'):
+                tmp = all_file[3:]
+                pass_file = int(tmp, 2)
+                tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
+            else:
+                self.open_err()
+                return 0
             
         if basename.endswith('.txt'):
             basename = basename[:basename.find('.txt')]
@@ -196,6 +217,13 @@ class GenApplication(QMainWindow):
         self.msg_info.setText("Password was saved")
         self.msg_info.setWindowTitle("PassGen")
         self.msg_info.exec_()
+
+    def open_err(self):
+        self.msg_operr = QMessageBox()
+        self.msg_operr.setIcon(QMessageBox.Critical)
+        self.msg_operr.setText("Open Error")
+        self.msg_operr.setWindowTitle("PassGen")
+        self.msg_operr.exec_()
 
     def _main(self,length):
         count = 0
@@ -284,7 +312,7 @@ class GenApplication(QMainWindow):
         path = pass_for
         with open("{}.txt".format(path), "w") as file:
             tmp = bin(int.from_bytes(my_pass.encode(), 'big'))
-            file.write(tmp)
+            file.write('***' + tmp)
 
 
 def main():

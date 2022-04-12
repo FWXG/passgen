@@ -73,6 +73,11 @@ class GenApplication(QMainWindow):
         self.show()
 
     def UIComponents(self):
+        
+        #Button Param
+        self.button = QPushButton("Generate",self)
+        self.button.setGeometry(50,110,200,25)
+        self.button.clicked.connect(self._generate_pass)
 
         #CheckBox ShowPassword
         self.show_pass = QCheckBox(self)
@@ -82,20 +87,16 @@ class GenApplication(QMainWindow):
         self.remake_pass = QCheckBox(self)
         self.remake_pass.setChecked(True)
         self.remake_pass.setGeometry(347,66, 20, 20)
-        
-        #Button Param
-        self.button = QPushButton("Generate",self)
-        self.button.setGeometry(50,110,200,25)
-        self.button.clicked.connect(self._generate_pass)
 
         #PassGen Text Param
         self.text_window = QLineEdit(self)
         self.text_window.setGeometry(50,75,200,25)
-        #Not work
         if self.remake_pass.isChecked():
             self.text_window.setReadOnly(True)
+            #print(1111111)
         else:
             self.text_window.setReadOnly(False)
+            #print(2222222)
 
         #SaveFor Param
         self.save_for = QLineEdit(self)
@@ -122,7 +123,7 @@ class GenApplication(QMainWindow):
         self.hide_pass.setGeometry(265,34,80,15)
         self.change_pass_text = QLabel(self)
         self.change_pass_text.setText("Readmod:")
-        self.change_pass_text.setGeometry(290,68,70,15)
+        self.change_pass_text.setGeometry(290,68,50,15)
         
     def _generate_pass(self):
         length = self.length_window.text()
@@ -148,6 +149,7 @@ class GenApplication(QMainWindow):
         self.password = self._main(int(length))
         self.text_window.setAlignment(Qt.AlignCenter)
         self.text_window.setText(self.password)
+        
         #Save from push generate button
         #self._save(self.password, self.save_for.text())
         #self.pass_name_info()
@@ -202,6 +204,7 @@ class GenApplication(QMainWindow):
             print(all_file[20:23])
             if all_file[20:23] == '***':
                 print(1)
+                all_file = all_file.replace('\u00B6','0')
                 tmp = all_file[23:]
                 pass_file = int(tmp, 2)
                 tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
@@ -238,7 +241,7 @@ class GenApplication(QMainWindow):
         
     def keyPressEvent(self, event):
         #print(event.text())
-        if event.key() == Qt.Key_Return:
+        if event.key()   == Qt.Key_Return:
             self._generate_pass()
         elif event.key() == Qt.Key_Enter:
             self._generate_pass()
@@ -301,6 +304,7 @@ class GenApplication(QMainWindow):
         
         with open("{}.txt".format(path), "w") as file:
             tmp = bin(int.from_bytes(my_pass.encode(), 'big'))
+            tmp = tmp.replace('0','\u00B6')
             file.write(self.encode_pass + '***' + tmp)
 
 

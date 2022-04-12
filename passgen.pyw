@@ -7,6 +7,49 @@ from PyQt5.QtWidgets import QApplication, QTextEdit, QPlainTextEdit,QLineEdit, \
 from PyQt5.QtCore import QObject, Qt
 
 
+def rand_string(length, result, count, state):
+    while count < length:
+        rand_num = random.randint(33,122)#Change for 126
+        if state == 0:
+            result   += chr(rand_num)
+            count += 1
+        elif state == 1:
+            if 47 <= rand_num <=57 or 65 <= rand_num <=90 or 97 <= rand_num <=122:
+                continue
+            result   += chr(rand_num)
+            count += 1
+        elif state == 2:
+            if 47 <= rand_num <=57 or 33 <= rand_num <=47 or 58 <= rand_num <=64 or\
+                   91 <= rand_num <=97:
+                continue
+            result   += chr(rand_num)
+            count += 1
+        elif state == 3:
+            if 65 <= rand_num <=90 or 97 <= rand_num <=122 or 33 <= rand_num <=47 or\
+                58 <= rand_num <=64 or 91 <= rand_num <=97:
+                continue
+            result   += chr(rand_num)
+            count += 1
+        elif state == 4:
+            if 47 <= rand_num <=57:
+                continue
+            result   += chr(rand_num)
+            count += 1
+        elif state == 5:
+            if 65 <= rand_num <=90 or 97 <= rand_num <=122:
+                continue
+            result   += chr(rand_num)
+            count += 1
+        elif state == 6:
+            if 33 <= rand_num <=47 or 58 <= rand_num <=64 or 91 <= rand_num <=97:
+                continue
+            result   += chr(rand_num)
+            count += 1
+        elif state == 7:
+            return ""
+    return result
+    
+
 class GenApplication(QMainWindow):
     
     def __init__(self):
@@ -154,9 +197,12 @@ class GenApplication(QMainWindow):
         with open(fname[0], 'r') as file:
             
             all_file = file.read()
-            
-            if all_file.startswith('***'):
-                tmp = all_file[3:]
+            #Error when close
+            print(2)
+            print(all_file[20:23])
+            if all_file[20:23] == '***':
+                print(1)
+                tmp = all_file[23:]
                 pass_file = int(tmp, 2)
                 tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
             else:
@@ -245,74 +291,17 @@ class GenApplication(QMainWindow):
         elif not self.Symbols.isChecked():
             state = 6
 
-
-        print(state)
-
-        if state == 0:
-            while count < length:
-                res   += chr(random.randint(33,126))
-                count += 1
-            return res
-        elif state == 1:
-            while count < length:
-                tmp = chr(random.randint(33,126))
-                if 47 <= ord(tmp) <=57 or 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122:
-                    continue
-                res   += tmp
-                count += 1
-            return res
-        elif state == 2:
-            while count < length:
-                tmp = chr(random.randint(33,122))
-                if 47 <= ord(tmp) <=57 or 33 <= ord(tmp) <=47 or 58 <= ord(tmp) <=64 or\
-                   91 <= ord(tmp) <=97:
-                    continue
-                res   += tmp
-                count += 1
-            return res
-        elif state == 3:
-            while count < length:
-                tmp = chr(random.randint(33,122))
-                if 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122 or 33 <= ord(tmp) <=47 or\
-                   58 <= ord(tmp) <=64 or 91 <= ord(tmp) <=97:
-                    continue
-                res   += tmp
-                count += 1
-            return res
-        elif state == 4:
-            while count < length:
-                tmp = chr(random.randint(33,126))
-                if 47 <= ord(tmp) <=57:
-                    continue
-                res   += tmp
-                count += 1
-            return res
-        elif state == 5:
-            while count < length:
-                tmp = chr(random.randint(33,126))
-                if 65 <= ord(tmp) <=90 or 97 <= ord(tmp) <=122:
-                    continue
-                res   += tmp
-                count += 1
-            return res
-        elif state == 6:
-            while count < length:
-                tmp = chr(random.randint(33,122))
-                if 33 <= ord(tmp) <=47 or 58 <= ord(tmp) <=64 or 91 <= ord(tmp) <=97:
-                    continue
-                res   += tmp
-                count += 1
-            return res
-        elif state == 7:
-            return ""
-
+        return rand_string(length, res, count, state)
             
 
     def _save(self,my_pass,pass_for):
         path = pass_for
+        
+        self.encode_pass = rand_string(20, "", 0, 0)####
+        
         with open("{}.txt".format(path), "w") as file:
             tmp = bin(int.from_bytes(my_pass.encode(), 'big'))
-            file.write('***' + tmp)
+            file.write(self.encode_pass + '***' + tmp)
 
 
 def main():

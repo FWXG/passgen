@@ -235,6 +235,7 @@ class GenApplication(QMainWindow):
             if all_file[self.length_encode:self.length_encode + 3] == '***':
                 all_file = all_file.replace('\u00B6','0')
                 tmp = all_file[self.length_encode + 3:]
+                tmp = bin(int(tmp,2) ^ int(bin(self.xor_key),2))
                 pass_file = int(tmp, 2)
                 tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
             else:
@@ -328,9 +329,12 @@ class GenApplication(QMainWindow):
         path = pass_for
         self.length_encode = random.randint(20,40)
         self.encode_pass = rand_string(self.length_encode, "", 0, 0)####
+        self.xor_key = random.randint(1,20)
         
         with open("{}.txt".format(path), "w") as file:
             tmp = bin(int.from_bytes(my_pass.encode(), 'big'))
+            tmp = bin(int(tmp,2) ^ int(bin(self.xor_key),2))
+            print(tmp)
             tmp = tmp.replace('0','\u00B6')
             file.write(self.encode_pass + '***' + tmp) #Add str at the end
 

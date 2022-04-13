@@ -9,7 +9,7 @@ from PyQt5.QtCore import QObject, Qt
 
 def rand_string(length, result, count, state):
     while count < length:
-        rand_num = random.randint(33,122)#Change for 126
+        rand_num = random.randint(33,122)
         if state == 0:
             result   += chr(rand_num)
             count += 1
@@ -48,7 +48,8 @@ def rand_string(length, result, count, state):
         elif state == 7:
             return ""
     return result
-    
+
+
 
 class GenApplication(QMainWindow):
     
@@ -82,21 +83,18 @@ class GenApplication(QMainWindow):
         #CheckBox ShowPassword
         self.show_pass = QCheckBox(self)
         self.show_pass.setGeometry(347,33, 20, 20)
+        self.show_pass.stateChanged.connect(self._checkButtonAction)
 
         #CheckBox remake password
         self.remake_pass = QCheckBox(self)
         self.remake_pass.setChecked(True)
         self.remake_pass.setGeometry(347,66, 20, 20)
+        self.remake_pass.stateChanged.connect(self._checkButtonAction)
 
         #PassGen Text Param
         self.text_window = QLineEdit(self)
         self.text_window.setGeometry(50,75,200,25)
-        if self.remake_pass.isChecked():
-            self.text_window.setReadOnly(True)
-            #print(1111111)
-        else:
-            self.text_window.setReadOnly(False)
-            #print(2222222)
+        self.text_window.setReadOnly(True)
 
         #SaveFor Param
         self.save_for = QLineEdit(self)
@@ -128,23 +126,21 @@ class GenApplication(QMainWindow):
     def _generate_pass(self):
         length = self.length_window.text()
 
+        #If length not correct error
         if length == "" or length.isalpha():
             self.len_err()
             return 0
-        
+
+        #If length not correct error
         if length and int(length) > 30 or int(length) < 1:
             self.len_err()
             self.length_window.clear()
             return 0
 
+        #If save name empty error
         if self.save_for.text() == "":
             self.name_err()
             return 0
-
-        if self.show_pass.isChecked():
-            self.text_window.setEchoMode(QLineEdit.Password)
-        else:
-            self.text_window.setEchoMode(QLineEdit.Normal)
                  
         self.password = self._main(int(length))
         self.text_window.setAlignment(Qt.AlignCenter)
@@ -153,6 +149,19 @@ class GenApplication(QMainWindow):
         #Save from push generate button
         #self._save(self.password, self.save_for.text())
         #self.pass_name_info()
+
+    def _checkButtonAction(self):
+        #Hide password
+        if self.show_pass.isChecked():
+            self.text_window.setEchoMode(QLineEdit.Password)
+        else:
+            self.text_window.setEchoMode(QLineEdit.Normal)
+        #Change password by hand
+        if self.remake_pass.isChecked():
+            self.text_window.setReadOnly(True)
+        else:
+            self.text_window.setReadOnly(False)
+        
 
     def _createMenuBar(self):
         menuBar  = self.menuBar()
@@ -194,18 +203,20 @@ class GenApplication(QMainWindow):
 
     def _browsePassword(self):
         fname = QFileDialog.getOpenFileName(self,'Open file','*.txt', filter = 'Text Files(.txt)')
+
+        #When close without any name return ('','')
+        if fname == ('',''):
+            return 0
+        
         basename = os.path.basename(fname[0])
 
         with open(fname[0], 'r') as file:
             
             all_file = file.read()
-            #Error when close
-            print(2)
-            print(all_file[20:23])
-            if all_file[20:23] == '***':
-                print(1)
+            print(all_file[self.length_encode:self.length_encode + 3])
+            if all_file[self.length_encode:self.length_encode + 3] == '***':
                 all_file = all_file.replace('\u00B6','0')
-                tmp = all_file[23:]
+                tmp = all_file[self.length_encode + 3:]
                 pass_file = int(tmp, 2)
                 tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
             else:
@@ -225,6 +236,7 @@ class GenApplication(QMainWindow):
         sname = QFileDialog.getSaveFileName(self,'Save file','{}'.format(self.save_for.text()),\
                                             filter = 'Text Files(.txt)')
 
+        #When close without any name return ('','')
         if sname == ('',''):
             return 0
         
@@ -249,7 +261,7 @@ class GenApplication(QMainWindow):
     def len_err(self):
         self.msg_err = QMessageBox()
         self.msg_err.setIcon(QMessageBox.Critical)
-        self.msg_err.setText("<p align='bottom'>Length Error</p>") #Not work
+        self.msg_err.setText("Length Error")
         self.msg_err.setWindowTitle("PassGen")
         self.msg_err.exec_()
 
@@ -299,13 +311,13 @@ class GenApplication(QMainWindow):
 
     def _save(self,my_pass,pass_for):
         path = pass_for
-        
-        self.encode_pass = rand_string(20, "", 0, 0)####
+        self.length_encode = random.randint(20,40)
+        self.encode_pass = rand_string(self.length_encode, "", 0, 0)####
         
         with open("{}.txt".format(path), "w") as file:
             tmp = bin(int.from_bytes(my_pass.encode(), 'big'))
             tmp = tmp.replace('0','\u00B6')
-            file.write(self.encode_pass + '***' + tmp)
+            file.write(self.encode_pass + '***' + tmp) #Add str at the end
 
 
 def main():

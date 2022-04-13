@@ -50,11 +50,30 @@ def rand_string(length, result, count, state):
     return result
 
 
+class HelpDocumentation(QMainWindow):
+    
+    def __init__(self):
+        super().__init__()
+
+        #Window param
+        self.setWindowTitle("PassGen Help")
+        self.resize(500,500)
+
+        self.help_text = QPlainTextEdit(self)
+        self.help_text.insertPlainText("HelpText")
+        self.help_text.setReadOnly(True)
+        #self.help_text.move(500,500)
+        self.help_text.resize(500,500)
+
 
 class GenApplication(QMainWindow):
     
     def __init__(self):
         super().__init__()
+
+        #Help window unit
+        self.help_doc = HelpDocumentation()
+        
         #Toolbar
         self._createActions()
         self._createMenuBar()
@@ -62,9 +81,9 @@ class GenApplication(QMainWindow):
 
         self.openAction.triggered.connect(self._browsePassword)
         self.saveAction.triggered.connect(self._savePassword)
-        #self.openDocs.triggered.connect(self._openDocs)
+        self.openDocs.triggered.connect(self._openDocs)
 
-        #Screen param
+        #Window param
         self.setWindowTitle("PassGen")
         self.setFixedWidth(400)
         self.setFixedHeight(150)
@@ -205,8 +224,7 @@ class GenApplication(QMainWindow):
         fname = QFileDialog.getOpenFileName(self,'Open file','*.txt', filter = 'Text Files(.txt)')
 
         #When close without any name return ('','')
-        if fname == ('',''):
-            return 0
+        if fname == ('',''): return 0
         
         basename = os.path.basename(fname[0])
 
@@ -237,8 +255,7 @@ class GenApplication(QMainWindow):
                                             filter = 'Text Files(.txt)')
 
         #When close without any name return ('','')
-        if sname == ('',''):
-            return 0
+        if sname == ('',''): return 0
         
         if self.save_for.text() == "":
             self.name_err()
@@ -247,12 +264,10 @@ class GenApplication(QMainWindow):
         self._save(self.password,sname[0])
         self.pass_name_info()
 
-    #def _openDoc(self):
-        #with open('doc.txt', 'r') as doc_file:
-            #about = doc_file.read()
+    def _openDocs(self):
+        self.help_doc.show()
         
     def keyPressEvent(self, event):
-        #print(event.text())
         if event.key()   == Qt.Key_Return:
             self._generate_pass()
         elif event.key() == Qt.Key_Enter:

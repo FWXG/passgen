@@ -54,16 +54,17 @@ class HelpDocumentation(QMainWindow):
     
     def __init__(self):
         super().__init__()
-
+    
         #Window param
         self.setWindowTitle("PassGen Help")
-        self.resize(500,500)
+        self.setFixedWidth(500)
+        self.setFixedHeight(500)
 
-        self.help_text = QPlainTextEdit(self)
+        self.help_text = QTextEdit(self)
         self.help_text.insertPlainText("HelpText")
         self.help_text.setReadOnly(True)
-        #self.help_text.move(500,500)
-        self.help_text.resize(500,500)
+        self.help_text.resize(self.frameGeometry().width(), self.frameGeometry().height())
+        
 
 
 class GenApplication(QMainWindow):
@@ -231,10 +232,9 @@ class GenApplication(QMainWindow):
         with open(fname[0], 'r') as file:
             
             all_file = file.read()
-            print(all_file[self.length_encode:self.length_encode + 3])
-            if all_file[self.length_encode:self.length_encode + 3] == '***':
+            if all_file[self.length_encode_begin:self.length_encode_begin + 3] == '***':
                 all_file = all_file.replace('\u00B6','0')
-                tmp = all_file[self.length_encode + 3:]
+                tmp = all_file[self.length_encode_begin + 3:-self.length_encode_end]
                 tmp = bin(int(tmp,2) ^ int(bin(self.xor_key),2))
                 pass_file = int(tmp, 2)
                 tmp = pass_file.to_bytes((pass_file.bit_length() + 7)// 8 ,'big').decode()
@@ -262,7 +262,7 @@ class GenApplication(QMainWindow):
             self.name_err()
             return 0
         
-        self._save(self.password,sname[0])
+        self._save(self.text_window.text(),sname[0])
         self.pass_name_info()
 
     def _openDocs(self):
@@ -326,17 +326,19 @@ class GenApplication(QMainWindow):
             
 
     def _save(self,my_pass,pass_for):
+        print(my_pass)
         path = pass_for
-        self.length_encode = random.randint(20,40)
-        self.encode_pass = rand_string(self.length_encode, "", 0, 0)####
+        self.length_encode_begin = random.randint(200,250)
+        self.length_encode_end   = random.randint(100,150)
+        self.encode_pass_begin   = rand_string(self.length_encode_begin, "", 0, 0)
+        self.encode_pass_end     = rand_string(self.length_encode_end, "", 0, 0)
         self.xor_key = random.randint(1,20)
         
         with open("{}.txt".format(path), "w") as file:
             tmp = bin(int.from_bytes(my_pass.encode(), 'big'))
             tmp = bin(int(tmp,2) ^ int(bin(self.xor_key),2))
-            print(tmp)
             tmp = tmp.replace('0','\u00B6')
-            file.write(self.encode_pass + '***' + tmp) #Add str at the end
+            file.write(self.encode_pass_begin + '***' + tmp + self.encode_pass_end) #Add str at the end
 
 
 def main():
